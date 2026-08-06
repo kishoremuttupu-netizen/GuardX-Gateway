@@ -3,7 +3,8 @@ import { Shield, Lock, Mail, KeyRound, User, Eye, EyeOff, ArrowRight, ArrowLeft,
 
 export default function LoginPage({ onLoginSuccess }) {
   // Modes: 'login' | 'register' | 'forgot'
-  const [authMode, setAuthMode] = useState('login');
+  const [authMode, setAuthMode] = useState('register');
+
 
   // Form inputs
   const [name, setName] = useState('');

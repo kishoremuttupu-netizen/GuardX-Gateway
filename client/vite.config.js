@@ -5,6 +5,7 @@ export default defineConfig({
   plugins: [react()],
   server: {
     port: 3000,
+    host: true, // Listens on 0.0.0.0 so other devices on local Wi-Fi can open the app
     proxy: {
       '/api': {
         target: 'http://localhost:5000',

@@ -1,16 +1,26 @@
 import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
+import path from 'path';
+import { fileURLToPath } from 'url';
 import { analyzeWithGeminiIfAvailable, PRESET_SCENARIOS } from './securityEngine.js';
 import { isSupabaseConfigured, saveAuditLogToSupabase, fetchAuditLogsFromSupabase, supabase } from './supabaseClient.js';
 
 dotenv.config();
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const app = express();
 const PORT = process.env.PORT || 5000;
 
 app.use(cors());
 app.use(express.json({ limit: '10mb' }));
+
+// Serve static frontend assets from client/dist when built
+const clientDistPath = path.join(__dirname, '../client/dist');
+app.use(express.static(clientDistPath));
+
 
 // Health Check
 app.get('/api/health', (req, res) => {
@@ -32,7 +42,6 @@ app.post('/api/auth/login', async (req, res) => {
       return res.status(400).json({ error: 'Please enter both email address and password.' });
     }
 
-    // Try Supabase Auth first
     if (isSupabaseConfigured()) {
       try {
         const { data, error } = await supabase.auth.signInWithPassword({ email, password });
@@ -53,7 +62,6 @@ app.post('/api/auth/login', async (req, res) => {
       }
     }
 
-    // Standard Login Response
     return res.json({
       success: true,
       user: {
@@ -80,7 +88,6 @@ app.post('/api/auth/signup', async (req, res) => {
       return res.status(400).json({ error: 'Full name, email address, and password are required.' });
     }
 
-    // Supabase Sign Up if configured
     if (isSupabaseConfigured()) {
       try {
         const { data, error } = await supabase.auth.signUp({
@@ -107,7 +114,6 @@ app.post('/api/auth/signup', async (req, res) => {
       }
     }
 
-    // Standard Registration Response
     return res.json({
       success: true,
       message: 'Account created successfully!',
@@ -196,15 +202,28 @@ const handleAnalyzeRequest = async (req, res) => {
 app.post('/api/shield/analyze', handleAnalyzeRequest);
 app.post('/api/analyze', handleAnalyzeRequest);
 
-app.listen(PORT, () => {
-  console.log(`====================================================`);
-  console.log(`🛡️ GuardX Security & Privacy Gateway running on port ${PORT}`);
-  console.log(`   Login API: POST http://localhost:${PORT}/api/auth/login`);
-  console.log(`   Register API: POST http://localhost:${PORT}/api/auth/signup`);
-  console.log(`   Reset Password: POST http://localhost:${PORT}/api/auth/reset-password`);
-  console.log(`   Scan API: POST http://localhost:${PORT}/api/shield/analyze`);
-  console.log(`   Health Check: http://localhost:${PORT}/api/health`);
-  console.log(`   AI Engine: ${process.env.GEMINI_API_KEY ? 'Gemini API Enabled' : 'Local Rule Engine Active'}`);
-  console.log(`   Database: ${isSupabaseConfigured() ? 'Supabase Database Connected ⚡' : 'Supabase Not Configured'}`);
-  console.log(`====================================================`);
+// Wildcard fallback for React client single-page application routing
+app.get('*', (req, res, next) => {
+  if (req.path.startsWith('/api')) {
+    return next();
+  }
+  res.sendFile(path.join(clientDistPath, 'index.html'), (err) => {
+    if (err) next();
+  });
 });
+
+export default app;
+
+
+if (!process.env.VERCEL) {
+  app.listen(PORT, '0.0.0.0', () => {
+    console.log(`====================================================`);
+    console.log(`🛡️ GuardX Security & Privacy Gateway running on port ${PORT}`);
+    console.log(`   Local URL: http://localhost:${PORT}`);
+    console.log(`   Network URL: http://192.168.8.62:${PORT}`);
+    console.log(`   AI Engine: ${process.env.GEMINI_API_KEY ? 'Gemini API Enabled ⚡' : 'Local Rule Engine Active'}`);
+    console.log(`   Database: ${isSupabaseConfigured() ? 'Supabase Database Connected ⚡' : 'Supabase Not Configured'}`);
+    console.log(`====================================================`);
+  });
+}
+

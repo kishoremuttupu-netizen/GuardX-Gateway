@@ -7,8 +7,16 @@ import TrustCard from './components/TrustCard';
 import PrivacyControls from './components/PrivacyControls';
 import AuditLogModal from './components/AuditLogModal';
 import LoginPage from './components/LoginPage';
+import DeepfakeInspector from './components/DeepfakeInspector';
+import DeepfakeFaceScanner from './components/DeepfakeFaceScanner';
+import ScamMessageDetector from './components/ScamMessageDetector';
+import { Terminal, Eye, Film, ShieldAlert } from 'lucide-react';
 
 export default function App() {
+  const [activeSection, setActiveSection] = useState('scam'); // 'scam' | 'facescan' | 'deepfake' | 'prompt'
+
+
+
   // User Authentication state
   const [user, setUser] = useState(() => {
     try {
@@ -148,36 +156,133 @@ export default function App() {
         onLogout={handleLogout}
       />
 
-      {/* Judge Mode Attack Simulator */}
-      <DemoPresets onSelectPreset={handleSelectPreset} />
+      {/* Section Navigation Tabs */}
+      <div style={{ display: 'flex', gap: '12px', marginBottom: '20px', borderBottom: '1px solid #E4E4E7', paddingBottom: '12px', flexWrap: 'wrap' }}>
+        <button
+          onClick={() => setActiveSection('scam')}
+          style={{
+            background: activeSection === 'scam' ? 'rgba(37, 99, 235, 0.1)' : '#FAFAFA',
+            border: activeSection === 'scam' ? '1px solid #2563EB' : '1px solid #E4E4E7',
+            color: activeSection === 'scam' ? '#2563EB' : '#52525B',
+            padding: '10px 18px',
+            borderRadius: '10px',
+            fontWeight: 700,
+            fontSize: '0.9rem',
+            cursor: 'pointer',
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: '8px'
+          }}
+        >
+          <ShieldAlert style={{ width: '18px', height: '18px' }} />
+          AI Scam Message Detector 🛡️
+        </button>
 
-      {/* Main Scanner Grid */}
-      <div style={{
-        display: 'grid',
-        gridTemplateColumns: 'minmax(320px, 1.1fr) minmax(320px, 1.1fr) minmax(280px, 0.8fr)',
-        gap: '20px',
-        alignItems: 'stretch'
-      }}>
-        {/* Left Column: Raw Input Terminal */}
-        <InputTerminal
-          text={text}
-          setText={setText}
-          onAnalyze={() => handleAnalyze()}
-          isLoading={isLoading}
-        />
+        <button
+          onClick={() => setActiveSection('facescan')}
+          style={{
+            background: activeSection === 'facescan' ? 'rgba(37, 99, 235, 0.1)' : '#FAFAFA',
+            border: activeSection === 'facescan' ? '1px solid #2563EB' : '1px solid #E4E4E7',
+            color: activeSection === 'facescan' ? '#2563EB' : '#52525B',
+            padding: '10px 18px',
+            borderRadius: '10px',
+            fontWeight: 700,
+            fontSize: '0.9rem',
+            cursor: 'pointer',
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: '8px'
+          }}
+        >
+          <Film style={{ width: '18px', height: '18px' }} />
+          Deepfake Face Scanner 🎭
+        </button>
 
-        {/* Center Column: Live Sanitized & Masked Output with Hover Tooltips */}
-        <LiveOutputPanel
-          scanResult={scanResult}
-          isLoading={isLoading}
-        />
+        <button
+          onClick={() => setActiveSection('deepfake')}
+          style={{
+            background: activeSection === 'deepfake' ? 'rgba(37, 99, 235, 0.1)' : '#FAFAFA',
+            border: activeSection === 'deepfake' ? '1px solid #2563EB' : '1px solid #E4E4E7',
+            color: activeSection === 'deepfake' ? '#2563EB' : '#52525B',
+            padding: '10px 18px',
+            borderRadius: '10px',
+            fontWeight: 700,
+            fontSize: '0.9rem',
+            cursor: 'pointer',
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: '8px'
+          }}
+        >
+          <Eye style={{ width: '18px', height: '18px' }} />
+          Image & Media Inspector
+        </button>
 
-        {/* Right Column: AI Trust & Explainability Card */}
-        <TrustCard
-          scanResult={scanResult}
-          isLoading={isLoading}
-        />
+        <button
+          onClick={() => setActiveSection('prompt')}
+          style={{
+            background: activeSection === 'prompt' ? 'rgba(37, 99, 235, 0.1)' : '#FAFAFA',
+            border: activeSection === 'prompt' ? '1px solid #2563EB' : '1px solid #E4E4E7',
+            color: activeSection === 'prompt' ? '#2563EB' : '#52525B',
+            padding: '10px 18px',
+            borderRadius: '10px',
+            fontWeight: 700,
+            fontSize: '0.9rem',
+            cursor: 'pointer',
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: '8px'
+          }}
+        >
+          <Terminal style={{ width: '18px', height: '18px' }} />
+          AI Prompt Security Gateway
+        </button>
       </div>
+
+      {activeSection === 'scam' ? (
+        <ScamMessageDetector onScanComplete={(data) => {
+          setHistory(prev => [data, ...prev]);
+        }} />
+      ) : activeSection === 'facescan' ? (
+        <DeepfakeFaceScanner onScanComplete={(data) => {
+          setHistory(prev => [data, ...prev]);
+        }} />
+      ) : activeSection === 'deepfake' ? (
+        <DeepfakeInspector onScanComplete={(data) => {
+          setHistory(prev => [data, ...prev]);
+        }} />
+      ) : (
+
+
+        <>
+          {/* Judge Mode Attack Simulator */}
+          <DemoPresets onSelectPreset={handleSelectPreset} />
+
+          {/* Main Scanner Grid */}
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: 'minmax(320px, 1.1fr) minmax(320px, 1.1fr) minmax(280px, 0.8fr)',
+            gap: '20px',
+            alignItems: 'stretch'
+          }}>
+            <InputTerminal
+              text={text}
+              setText={setText}
+              onAnalyze={() => handleAnalyze()}
+              isLoading={isLoading}
+            />
+            <LiveOutputPanel
+              scanResult={scanResult}
+              isLoading={isLoading}
+            />
+            <TrustCard
+              scanResult={scanResult}
+              isLoading={isLoading}
+            />
+          </div>
+        </>
+      )}
+
 
       {/* Data Governance & Privacy Controls */}
       <PrivacyControls

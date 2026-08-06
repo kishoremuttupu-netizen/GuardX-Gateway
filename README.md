@@ -65,3 +65,41 @@ cd client
 cmd /c "npm run dev"
 ```
 *Frontend runs on `http://localhost:3000`.*
+
+---
+
+## 🌐 Deploying to Vercel
+
+GuardX is fully pre-configured for **1-Click Serverless Deployment on Vercel** (serving both the React frontend and Express serverless API endpoints).
+
+### 🚀 Direct Vercel Links
+- **[Deploy Project to Vercel](https://vercel.com/new)**
+- **[Vercel Dashboard](https://vercel.com/dashboard)**
+- **[Vercel CLI & Docs](https://vercel.com/docs)**
+
+### 🛠️ How to Deploy
+
+#### Option A: Vercel Web Dashboard (Recommended)
+1. Push this project repository to **GitHub** / **GitLab** / **Bitbucket**.
+2. Open **[Vercel Import Project](https://vercel.com/new)**.
+3. Select your repository.
+4. Keep the default settings (Vercel automatically detects `vercel.json` and `package.json`).
+5. Add the following **Environment Variables** under Project Settings:
+   - `GEMINI_API_KEY`: *(Optional)* Your Gemini API key for AI security explainability.
+   - `SUPABASE_URL`: *(Optional)* Your Supabase project URL.
+   - `SUPABASE_SERVICE_ROLE_KEY`: *(Optional)* Your Supabase service role key.
+   - `SUPABASE_ANON_KEY`: *(Optional)* Your Supabase anon key.
+6. Click **Deploy**!
+
+#### Option B: Vercel CLI
+```bash
+# Install Vercel CLI globally
+npm i -g vercel
+
+# Deploy to Vercel preview
+vercel
+
+# Deploy to Production
+vercel --prod
+```
+
