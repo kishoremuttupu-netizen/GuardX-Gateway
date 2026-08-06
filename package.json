@@ -6,8 +6,11 @@
   "main": "api/index.js",
   "scripts": {
     "start": "node api/index.js",
-    "dev": "node api/index.js"
+    "dev": "node api/index.js",
+    "build": "cd client && npm install && npm run build",
+    "vercel-build": "cd client && npm install && npm run build"
   },
+
   "dependencies": {
     "@supabase/supabase-js": "^2.48.1",
     "cors": "^2.8.5",
