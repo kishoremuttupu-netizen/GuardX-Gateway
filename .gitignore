@@ -1,32 +1,6 @@
-# Dependencies
-node_modules/
-.pnp
-.pnp.js
-
-# Environment variables & secrets
+node_modules
 .env
-.env.local
-.env.development.local
-.env.test.local
-.env.production.local
-
-# Tools & Scratch
-tools/
-scratch/
-
-# Production builds
-client/dist/
-dist/
-build/
-
-# Logs
-*.log
-npm-debug.log*
-
-# OS / IDE
-.DS_Store
-Thumbs.db
-.vscode/
-.idea/
-
-.vercel
+dist
+certs
+Git-Installer.exe
+*.exe
